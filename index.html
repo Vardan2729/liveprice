@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Free Live Forex Price</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+    #rate { font-size: 2em; margin-top: 20px; }
+  </style>
+</head>
+<body>
+
+<h1>Live Forex Price (Free API)</h1>
+<label for="pair">Select currency pair:</label>
+<select id="pair">
+  <option value="EUR/USD">EUR/USD</option>
+  <option value="GBP/USD">GBP/USD</option>
+  <option value="USD/JPY">USD/JPY</option>
+  <option value="USD/INR">USD/INR</option>
+</select>
+<button onclick="fetchForex()">Get Price</button>
+
+<div id="rate">--</div>
+
+<script>
+  async function fetchForex() {
+    const pair = document.getElementById('pair').value;
+    const [from, to] = pair.split('/');
+
+    const url = `https://api.frankfurter.app/latest?from=${from}&to=${to}`;
+
+    document.getElementById('rate').innerText = 'Loading...';
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if(data && data.rates && data.rates[to]) {
+        const rate = data.rates[to];
+        document.getElementById('rate').innerText = `${from}/${to} = ${rate}`;
+      } else {
+        document.getElementById('rate').innerText = 'Failed to fetch data';
+      }
+    } catch (error) {
+      document.getElementById('rate').innerText = 'Error fetching data';
+      console.error(error);
+    }
+  }
+</script>
+
+</body>
+</html>
