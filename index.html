@@ -1,0 +1,68 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Live Price Tracker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #eee;
+      text-align: center;
+      padding: 40px;
+    }
+    h1 {
+      color: gold;
+    }
+    .price-box {
+      margin: 20px auto;
+      padding: 20px;
+      border: 2px solid #444;
+      border-radius: 10px;
+      width: 300px;
+      background: #222;
+    }
+  </style>
+</head>
+<body>
+  <h1>📊 Live Market Prices</h1>
+  <div class="price-box" id="eurusd">EUR/USD: Loading...</div>
+  <div class="price-box" id="gbpusd">GBP/USD: Loading...</div>
+  <div class="price-box" id="xauusd">XAU/USD: Loading...</div>
+  <div class="price-box" id="btcusd">BTC/USD: Loading...</div>
+
+  <script>
+    async function fetchBTC() {
+      try {
+        const res = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT');
+        const data = await res.json();
+        document.getElementById('btcusd').innerText = `BTC/USD: ${parseFloat(data.price).toFixed(2)}`;
+      } catch (err) {
+        document.getElementById('btcusd').innerText = `BTC/USD: Error`;
+      }
+    }
+
+    async function fetchForex(pair, elementId) {
+      try {
+        const res = await fetch(`https://www.freeforexapi.com/api/live?pairs=${pair}`);
+        const data = await res.json();
+        const price = data.rates[pair].rate;
+        document.getElementById(elementId).innerText = `${pair.slice(0, 3)}/${pair.slice(3)}: ${price.toFixed(4)}`;
+      } catch (err) {
+        document.getElementById(elementId).innerText = `${pair}: Error`;
+      }
+    }
+
+    function updateAll() {
+      fetchForex('EURUSD', 'eurusd');
+      fetchForex('GBPUSD', 'gbpusd');
+      fetchForex('XAUUSD', 'xauusd');
+      fetchBTC();
+    }
+
+    updateAll();
+    setInterval(updateAll, 30000);
+  </script>
+</body>
+</html>
